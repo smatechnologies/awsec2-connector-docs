@@ -26,7 +26,7 @@ Supports virtual networks that you can create that are logically isolated from t
 
 The connector implementation consists of a Windows batch program that is executed by the Windows Agent. The connector is a Java program that uses the AWS Java SDK to communicate with the AWS environment.
  
-The job definitions are entered as Windows jobs using the AWS EC2 job sub-type. When the job is scheduled by OpCon, the definitions are passed as arguments to the AWS EC2 Connector.
+The job definitions are entered either as Windows jobs using the AWS EC2 job sub-type or Solution Manager using the AWSEC2 job type. When the job is scheduled by OpCon, the definitions are passed as arguments to the AWS EC2 Connector.
 
 ![AWS EC2 Component Overview](../static/img/awsec2-component-overview.png)
 
@@ -43,13 +43,15 @@ Function       | Description
 **StopInstance**           | used to stop one or more instances that are in a running state.
 **TerminateInstance**      | used to remove an existing instance from the environment.
 
-The connectors uses three global properties that allows the user to define information that will be available in the job subtype drop-down lists.
+The Enterprise Manager sub-type uses three global properties that allows the user to define information that will be available in the job subtype drop-down lists.
 
 Property Name       | Description
 --------------- | -----------
 **AWS_IMAGES**  | Contains a list of images that cam be selected when creating instances.
 **AWS_SIZES**   | Contains a list of server sizes that can be used when creating instances.
 **AWS_REGIONS**	| Contains a list of regions where the instances can be found or created.
+
+The Solution Manager AWSEC2 task type uses an OpCon script (***name***_data) to contain the drop-down list information.
 
 For CreateInstance and StartInstance operations, it is possible to save the instance identifier, the DNS name and the IP Address into properties (supports global, schedule and job instance properties). 
 If a more than one instance is defined, an integer value is appended to the property names starting at 1 when saving the values. This capability allows an operation to perform an action on more than one instance.

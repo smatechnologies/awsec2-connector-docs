@@ -1,4 +1,8 @@
-# Operation
+---
+sidebar_label: 'EM Subtype Operation'
+---
+
+# Enterprise Manager Sub-type Operation
 
 The Enterprise Manager includes a Windows AWS EC2 job sub-type for defining the AWS EC2 jobs. The job sub-type can be accessed by selecting AWS EC2 from the Job Sub-Type drop down 
 list when the Windows Job Type has been selected. 
