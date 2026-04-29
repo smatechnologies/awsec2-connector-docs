@@ -1,103 +1,166 @@
 ---
 sidebar_label: 'SM Subtype Operation'
+title: 'Solution Manager sub-type operation'
+description: 'Reference for all task types and fields available when defining AWSEC2 jobs using the Solution Manager sub-type.'
+tags:
+  - Reference
+  - Automation Engineer
+  - Jobs
+  - Agents
+  - Solution Manager
 ---
 
-# Solution Manager Sub-type Operation
+# Solution Manager sub-type operation
 
-It should be noted that all interactions with the Solution Manager sub-type can only be completed using Solution Manager.
+## What is it?
 
-The ACS AWSEC2 implementation provides a AWS EC2 job sub-type for defining the AWS EC2 jobs using Solution Manager.
+The Solution Manager AWSEC2 sub-type provides a job definition interface for managing EC2 instances through OpCon jobs in Solution Manager. When you select the **AWSEC2** job type, you can select a task type to define the specific operation to perform.
 
-Before defining jobs, the drop-down and config scripts and ACSAWSEC2 agent should be created (see installation section). 
+- Use this sub-type when your OpCon environment uses the Solution Manager interface and OpCon Release 25.0.3 or higher
+- Use this sub-type to create, start, stop, terminate, or retrieve the status of EC2 instances as part of an automated schedule
 
-## AWS EC2 Job Definition
+**NOTE:** All interactions with the Solution Manager sub-type must be completed using Solution Manager.
 
-When defining a AWSEC2 job, the job type of **AWSEC2** must be selected.
-Once selected, a Task Type can be selected from the drop-down list.
+Before defining jobs, complete the drop-down and config scripts and create the ACSAWSEC2 agent. See the [Installation](./installation.md) page for instructions.
 
-The following tasks are available 
+## AWS EC2 job definition
+
+When defining an AWSEC2 job, select the job type **AWSEC2**, then select a task type from the list.
+
+The following task types are available:
 
 - **Create Instance**
-- **Get Instance STatus By Tag** 
+- **Get Instance Status By Tag**
 - **Start Instance**
 - **Stop Instance**
 - **Terminate Instance**
 
-#### Create Instance Job definition
-The CreateInstance Operation can be used to create a new machine (instance) in the AWS environment from a defined Amazon Machine Image (AMI). It is possible to create several instances of the same AMI by setting the Number value to the number of machines to create (the default is 1). The Image ID and the Image Type are selected from the drop-down lists. If a Tag is present, the value will be used as the Name of the instance. The Tag definition can then be used on subsequent Operations.
+### Create Instance job definition
 
-If the virtual machine is to be created within a VPC (Virtual Private Cloud) environment the Subnet ID field must be used, otherwise the Security group field must be used.
-If the entered Security Group does not exist, it will created. If the entered Key Name does not exist, it will be created. 
+The Create Instance task type creates a new machine (instance) in the AWS environment from a defined Amazon Machine Image (AMI). You can create multiple instances of the same AMI by setting the **Number** value. If a Tag value is present, it is used as the instance name and can be referenced in subsequent operations.
 
-Field | Description
---------- | -----------
-**Number**                       | Required field and contains the number of instances to create. The default is **1**.
-**Image ID**                     | Required field and contains the name of an Amazon Machine Image (AMI) defined in the AWS environment. Select the appropriate image from the drop-down list. Values for the drop-down list are retrieved from the **AWS_IMAGES** global property. 
-**Image Type**                   | Required field and contains the name of an Amazon Image Type that defines the properties of the instance to create. Select the appropriate type from the drop-down list. Values for the drop-down list are retrieved from the **AWS_SIZES** global property.
-**Tag**                          | Optional field that defines a name that will be attached to the instance being created. The value will be assigned as the name of the instance and can used on subsequent **GetInstanceStatusByTag**, **StartInstance**, **StopInstance** and **TerminateInstance** jobs. Using this value allows you to specify a single **StartInstance**, **StopInstance** or **TerminateInstance** job to execute functions on multiple instances.
-**Security Group**               | The Security Group field is mutually exclusive with Subnet ID field. Either the Security group or Subnet ID field must be present.
-**Subnet ID**                    | Required field and contains the name of a database connection defined in the connector Connector.config file to use when retrieving the status of the report processing. Defines the security environment associated with the instance. This allows groups of machines to be isolated within your defined region. If the security group does not exist, it will be created during the CreateInstance job execution.
-**Key Name**                     | Required field that defines a key that is used when accessing the created instance. If the key name does not exist, it will be created during the **CreateInstance** job execution.
-**Wait for Instance(s) Startup** | Optional field. When selected will wait for the created instances to be in a ***Running ok*** condition.
+If the virtual machine is to be created within a VPC environment, use the **Subnet ID** field. Otherwise, use the **Security Group** field.
 
-#### Get Instance Status By Tag Job definition
-The Get Instance Status ByTag task type can be used to obtain the status of all instances defined within the region that are associated with the supplied user credentials or all instances that have the same tag value within the region that are associated with the supplied user credentials.  
+| Field | Description |
+|---|---|
+| **Number** | Required. The number of instances to create. Default: `1`. |
+| **Image ID** | Required. The Amazon Machine Image (AMI) to use. Select from the list. |
+| **Image Type** | Required. The instance type that defines the CPU, memory, and storage properties of the instance. Select from the list. |
+| **Tag** | Optional. A name assigned to the instance being created. The tag value is used as the instance name and can be referenced in subsequent GetInstanceStatusByTag, StartInstance, StopInstance, and TerminateInstance jobs. |
+| **Security Group** | Mutually exclusive with the Subnet ID field. Either Security Group or Subnet ID must be present. If the security group does not exist, it is created during the Create Instance job. |
+| **Subnet ID** | Defines the security environment for the instance within a VPC. If the security group does not exist, it is created during the Create Instance job. |
+| **Key Name** | Required. The key used when accessing the created instance. If the key name does not exist, it is created during the Create Instance job. |
+| **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all created instances reach a Running state before completing. |
 
-Field                   | Description
------------------------ | -----------
-**User ID**             | Required field that defines a user value that identifies which security credentials defined in the Connector.config file should be used for this request.
-**Region**              | Required field that defines the region where the machine instance has or will be located. Select the appropriate location from the drop-down list.  
-**Tag Name**            | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be retrieved. If the value is left empty then the status of all instances within the selected region that are associated with the supplied user credentials will be retrieved.  
+### Get Instance Status By Tag job definition
 
-#### Start Instance Job definition
-The Start Instance task type can be used to start a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be started by using either defining instance IDs or a TAG value.
+The Get Instance Status By Tag task type retrieves the status of instances in the selected region associated with the supplied user credentials. You can retrieve all instances or filter by tag name.
 
-Field                            | Description
--------------------------------- | -----------
-**User ID**                      | Required field that defines a user value that identifies which security credentials defined in the Connector.config file should be used for this request.
-**Region**                       | Required field that defines the region where the machine instance has or will be located. Select the appropriate location from the drop-down list.  
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be started. The TAG value overrides the defined instance values in the list.  
-**Instances**                    | Enter names of instances that must be started - for each instance select **+ Add Item** and enter the value.
-**Wait for Instance(s) Startup** | Optional field. When selected will wait for the started instances to be in a ***Running ok*** condition. If selected, it is possible to store information of the started instance in global properties
-**ID Property**                  | Enter the name of a global property where the instance ID will be stored..
-**DNS Property**                 | Enter the name of a global property where the instance DNS Address will be stored.
-**Pub IPAdr Property**           | Enter the name of a global property where the instance Public IpAddress will be stored.
-**Pri IPAdr Property**           | Enter the name of a global property where the instance Private IpAddress will be stored.
+| Field | Description |
+|---|---|
+| **User ID** | Required. Identifies which security credentials defined in the `Connector.config` file to use for this request. |
+| **Region** | Required. The region where the instance is located. Select from the list. |
+| **Tag Name** | When present, retrieves the status of all instances with the specified tag name in the selected region. When left empty, retrieves the status of all instances in the selected region associated with the supplied user credentials. |
 
-For a single instance, the values can be found in the property names.
+### Start Instance job definition
 
-For multiple instances, the values can be found in properties which have a counter value appended to them. In the above case, the instance ID will be saved in global property  MF_instanceId_1, the instance public DNS value in MF_DnsAdr_1, the instance public IP Address in MF_IpAdr_1 and the private IP Address in MF_PrIpAdr_1.
-If creating or starting more than 1 instance, additional properties are created for each instance (i.e. instance 2 instance ID will be saved in property MF_instanceId_2, instance 3 instance ID will be saved in property MF_instanceId_3.
+The Start Instance task type starts one or more stopped instances. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-#### Stop Instance Job definition
-The Stop Instance task type can be used to stop a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be stopped by either defining instance IDs or a TAG value.
+| Field | Description |
+|---|---|
+| **User ID** | Required. Identifies which security credentials defined in the `Connector.config` file to use for this request. |
+| **Region** | Required. The region where the instance is located. Select from the list. |
+| **Tag Name** | When present, starts all instances with the specified tag name in the selected region. The Tag value overrides the Instances list. |
+| **Instances** | Enter the names of instances to start. For each instance, select **+ Add Item** and enter the value. |
+| **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all started instances reach a Running state. When selected, you can store instance information in global properties. |
+| **ID Property** | The name of a global property where the instance ID is stored. |
+| **DNS Property** | The name of a global property where the instance DNS address is stored. |
+| **Pub IPAdr Property** | The name of a global property where the instance public IP address is stored. |
+| **Pri IPAdr Property** | The name of a global property where the instance private IP address is stored. |
 
-Field | Description
---------- | -----------
-**User ID**                      | Required field that defines a user value that identifies which security credentials defined in the Connector.config file should be used for this request.
-**Region**                       | Required field that defines the region where the machine instance has or will be located. Select the appropriate location from the drop-down list.  
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be started. The TAG value overrides the defined instance values in the list.  
-**Instances**                    | Enter names of instances that must be stopped - for each instance select **+ Add Item** and enter the value.
+For a single instance, values are saved in the specified property names. For multiple instances, values are saved in properties with a counter appended (for example, `MF_instanceId_1`, `MF_DnsAdr_1`, `MF_IpAdr_1`, `MF_PrIpAdr_1` for instance 1, and `MF_instanceId_2` for instance 2, and so on).
 
-#### Terminate Instance Job definition
-The Terminate Instance task type can be used to remove a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be terminated by either defining instance IDs or a TAG value.
+### Stop Instance job definition
 
-Field | Description
---------- | -----------
-**User ID**                      | Required field that defines a user value that identifies which security credentials defined in the Connector.config file should be used for this request.
-**Region**                       | Required field that defines the region where the machine instance has or will be located. Select the appropriate location from the drop-down list.  
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be started. The TAG value overrides the defined instance values in the list.  
-**Instances**                    | Enter names of instances t hath must be started - for each instance select **+ Add Item** and enter the value.
+The Stop Instance task type stops one or more running instances. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-## Job Finished processing 
+| Field | Description |
+|---|---|
+| **User ID** | Required. Identifies which security credentials defined in the `Connector.config` file to use for this request. |
+| **Region** | Required. The region where the instance is located. Select from the list. |
+| **Tag Name** | When present, stops all instances with the specified tag name in the selected region. The Tag value overrides the Instances list. |
+| **Instances** | Enter the names of instances to stop. For each instance, select **+ Add Item** and enter the value. |
 
-An AWSEC2 Scheduled JOB has the following possible return codes:
+### Terminate Instance job definition
 
-0	Success, the job completed processing.
-1	Failure, an exception occurred during job processing.
+The Terminate Instance task type removes one or more instances from the environment. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-This means that to check for a successful completion, the Failure Criteria should be set to NE (Not Equal) to 0.
+| Field | Description |
+|---|---|
+| **User ID** | Required. Identifies which security credentials defined in the `Connector.config` file to use for this request. |
+| **Region** | Required. The region where the instance is located. Select from the list. |
+| **Tag Name** | When present, terminates all instances with the specified tag name in the selected region. The Tag value overrides the Instances list. |
+| **Instances** | Enter the names of instances to terminate. For each instance, select **+ Add Item** and enter the value. |
+
+## Job finished processing
+
+An AWSEC2 job has the following return codes:
+
+| Return code | Meaning |
+|---|---|
+| `0` | Success — the job completed processing |
+| `1` | Failure — an exception occurred during job processing |
+
+To detect failures, set the Failure Criteria to **NE** (Not Equal) to `0`.
 
 ## Logging
 
-All information produced by the OpCon job is available in the job output and can be retrieved using the OpCon JORS capability. 
+All information produced by the OpCon job is available through the OpCon JORS capability.
+
+## FAQs
+
+**Can I use Enterprise Manager to manage Solution Manager sub-type jobs?**
+
+No. All interactions with the Solution Manager sub-type must be completed using Solution Manager.
+
+**What are the return codes for an AWSEC2 job?**
+
+Return code `0` indicates success. Return code `1` indicates failure. Set the Failure Criteria to **NE** (Not Equal) to `0` to detect failures correctly.
+
+**How do I add multiple instances to a Start Instance or Stop Instance job?**
+
+Select **+ Add Item** for each instance you want to include in the job definition.
+
+**What happens if I specify both a Tag Name and a list of instances?**
+
+The Tag value takes precedence and overrides the Instances list.
+
+**Where is job output stored?**
+
+Job output is available through the OpCon JORS capability and can be retrieved using Solution Manager.
+
+**What must be set up before defining AWSEC2 jobs in Solution Manager?**
+
+The drop-down script, config script, and ACSAWSEC2 agent must be created before defining jobs. See the [Installation](./installation.md) page for instructions.
+
+## Glossary
+
+**Task type** — The specific operation to perform within an AWSEC2 job definition. Available task types are Create Instance, Get Instance Status By Tag, Start Instance, Stop Instance, and Terminate Instance.
+
+**Tag** — A name assigned to an EC2 instance, used to identify and group instances for subsequent operations. When a Tag value is specified in a Start, Stop, or Terminate job, it targets all instances with that tag name.
+
+**AMI (Amazon Machine Image)** — A preconfigured template used to create EC2 instances, containing the operating system and additional software.
+
+**Instance type** — A configuration that defines the CPU, memory, storage, and networking capacity of an EC2 instance (for example, `t2.micro`, `m5.large`).
+
+**Security group** — A virtual firewall controlling the protocols, ports, and IP ranges permitted to communicate with EC2 instances.
+
+**Subnet ID** — The identifier of a subnet within a VPC, used to place an EC2 instance within a specific network segment.
+
+**JORS (Job Output Retrieval System)** — The OpCon capability for retrieving job output produced on agent machines.
+
+**Related topics:**
+
+- [AWSEC2 Connector Overview](./overview.md)
+- [Installation](./installation.md)
+- [Enterprise Manager Sub-type Operation](./EM Subtype operation.md)

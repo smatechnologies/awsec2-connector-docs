@@ -1,9 +1,9 @@
 module.exports = {
   mySidebar: [
-    'index',
+    'overview',
+    'release notes',
     'installation',
     'EM Subtype operation',
     'SM Subtype operation',
-    'release notes',
   ],
 };

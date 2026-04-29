@@ -1,115 +1,174 @@
 ---
 sidebar_label: 'EM Subtype Operation'
+title: 'Enterprise Manager sub-type operation'
+description: 'Reference for all fields and operations available when defining AWS EC2 jobs using the Enterprise Manager sub-type.'
+tags:
+  - Reference
+  - Automation Engineer
+  - Jobs
+  - Agents
 ---
 
-# Enterprise Manager Sub-type Operation
+# Enterprise Manager sub-type operation
 
-The Enterprise Manager includes a Windows AWS EC2 job sub-type for defining the AWS EC2 jobs. The job sub-type can be accessed by selecting AWS EC2 from the Job Sub-Type drop down 
-list when the Windows Job Type has been selected. 
+## What is it?
 
-Before defining jobs, the global properties AWS_REGIONS, AWS_IMAGES and AWS_SIZES should be completed. These global properties hold the definitions that populate the drop-down 
-lists used when creating the definitions to create a virtual machine in the EC2 environment.
+The Enterprise Manager AWS EC2 sub-type provides a job definition interface for managing EC2 instances through OpCon jobs. When you select **AWS EC2** from the Job Sub-Type list for a Windows job, the sub-type displays fields for configuring the target region, operation, and operation-specific parameters.
 
-Name            | Description
---------------- | -----------
-**AWS_IMAGES**  | This contains a list of images that can be installed in the EC2 environment. The information consists of a description and the image name separated by a colon. Information for a virtual machine is entered within quotes and multiple entries are separated by a comma (i.e. ***"description : image name","description : image name"***). Image names can be added to the drop-down list by editing the property. The format of item must be ***"description : image"***.
-**AWS_SIZES**   | This contains a list of virtual machine sizes that can be used when creating the virtual machine. The information consists of the size. Information for a virtual machine size is entered within quotes and multiple entries are separated by a comma (i.e. ***"size”,”size”***). .
-**AWS_REGIONS** | This contains a list of regions that can be selected. Information for a region is entered within quotes and multiple entries are separated by a comma (i.e. ***“region”,”region”***). 
+- Use this sub-type when your OpCon environment uses Enterprise Manager and you need to automate EC2 instance management
+- Use this sub-type to create, start, stop, terminate, or retrieve the status of EC2 instances as part of an automated schedule
 
-## AWS EC2 Job Definition
+Before defining jobs, complete the **AWS_REGIONS**, **AWS_IMAGES**, and **AWS_SIZES** global properties. These properties populate the lists used when creating instance definitions.
 
-The job sub-type consists of two portions with the upper portion defining the location information of the connector, the AWS region where the instance will be created or of an existing instance that the operation must be performed. The connector supports operations to **create**, **start**, **stop**, **terminate** and **retrieve** the status of the instances. 
- 
-### Upper Section Fields.
+## Global properties
 
-Field | Description
------------- | -----------
-**Connector Location**  | Required field and contains the installed location of the AWS EC2 Connector (default value [[AWSEC2Path]]). This should not be changed and the location should be defined in the **JAWSEC2Path** property.
-**User ID**             | Required field that defines a user value that identifies which security credentials defined in the Connector.config file should be used for this request.
-**Region**              | Required field that defines the region where the machine instance has or will be located. Select the appropriate location from the drop-down list. Values for the drop-down list are retrieved from the **AWS_REGIONS** global property. 
-**Operation**           | Required field that contains the Operation to execute. When an Operation is selected the appropriate TAB will be visible in the lower section of the Job definition. Supported operations are **CreateInstance**, **GetInstanceStatusByTag**, **StartInstance**, **StopInstance** and **TerminateInstance**.  
+| Property | Description |
+|---|---|
+| **AWS_IMAGES** | A list of AMI images available in the EC2 environment. Each entry consists of a description and image name separated by a colon, enclosed in quotes, with multiple entries separated by commas. Format: `"description : image name"`. Image names can be added by editing the property. |
+| **AWS_SIZES** | A list of virtual machine sizes available when creating instances. Each size entry is enclosed in quotes, with multiple entries separated by commas. Format: `"size"`. |
+| **AWS_REGIONS** | A list of regions available for selection. Each region entry is enclosed in quotes, with multiple entries separated by commas. Format: `"region"`. |
 
-### Lower Section Fields.
-The lower section of the job sub-type definition contains the operation information. When an operation is selected, the appropriate TAB will be displayed.
+## AWS EC2 job definition
 
-#### CreateInstance Job definition
-The CreateInstance Operation can be used to create a new machine (instance) in the AWS environment from a defined Amazon Machine Image (AMI). It is possible to create several instances of the same AMI by setting the Number value to the number of machines to create (the default is 1). The Image ID and the Image Type are selected from the drop-down lists. If a Tag is present, the value will be used as the Name of the instance. The Tag definition can then be used on subsequent Operations.
+The job sub-type has two portions: the upper section defines the connector location and AWS region; the lower section contains operation-specific fields.
 
-If the virtual machine is to be created within a VPC (Virtual Private Cloud) environment the Subnet ID field must be used, otherwise the Security group field must be used.
-If the entered Security Group does not exist, it will created. If the entered Key Name does not exist, it will be created. 
+### Upper section fields
 
-Field | Description
---------- | -----------
-**Number**                       | Required field and contains the number of instances to create. The default is **1**.
-**Image ID**                     | Required field and contains the name of an Amazon Machine Image (AMI) defined in the AWS environment. Select the appropriate image from the drop-down list. Values for the drop-down list are retrieved from the **AWS_IMAGES** global property. 
-**Image Type**                   | Required field and contains the name of an Amazon Image Type that defines the properties of the instance to create. Select the appropriate type from the drop-down list. Values for the drop-down list are retrieved from the **AWS_SIZES** global property.
-**Tag**                          | Optional field that defines a name that will be attached to the instance being created. The value will be assigned as the name of the instance and can used on subsequent **GetInstanceStatusByTag**, **StartInstance**, **StopInstance** and **TerminateInstance** jobs. Using this value allows you to specify a single **StartInstance**, **StopInstance** or **TerminateInstance** job to execute functions on multiple instances.
-**Security Group**               | The Security Group field is mutually exclusive with Subnet ID field. Either the Security group or Subnet ID field must be present.
-**Subnet ID**                    | Required field and contains the name of a database connection defined in the connector Connector.config file to use when retrieving the status of the report processing. Defines the security environment associated with the instance. This allows groups of machines to be isolated within your defined region. If the security group does not exist, it will be created during the CreateInstance job execution.
-**Key Name**                     | Required field that defines a key that is used when accessing the created instance. If the key name does not exist, it will be created during the **CreateInstance** job execution.
-**Wait for Instance(s) Startup** | Optional field. When selected will wait for the created instances to be in a ***Running ok*** condition.
+| Field | Description |
+|---|---|
+| **Connector Location** | Required. The installed location of the AWS EC2 Connector (default value: `[[AWSEC2Path]]`). Do not change this value — define the location in the **AWSEC2Path** global property. |
+| **User ID** | Required. Identifies which security credentials defined in the `Connector.config` file to use for this request. |
+| **Region** | Required. The region where the instance is or will be located. Select from the list. Values are retrieved from the **AWS_REGIONS** global property. |
+| **Operation** | Required. The operation to run. When an operation is selected, the corresponding tab appears in the lower section. Supported operations: **CreateInstance**, **GetInstanceStatusByTag**, **StartInstance**, **StopInstance**, **TerminateInstance**. |
 
-#### GetInstanceStatusByTag Job definition
-The GetInstanceStatusByTag Operation can be used to obtain the status of all instances defined within the region associated that are associated with the supplied user credentials or all instances that have the same tag value within the region that are associated with the supplied user credentials.  
+### CreateInstance job definition
 
-Field | Description
---------- | -----------
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be retrieved. If the value is left empty then the status of all instances within the selected region that are associated with the supplied user credentials will be retrieved.  
+The CreateInstance operation creates a new machine (instance) in the AWS environment from a defined Amazon Machine Image (AMI). You can create multiple instances of the same AMI by setting the **Number** value to the desired count. If a Tag value is present, it is used as the name of the instance and can be referenced in subsequent operations.
 
-#### StartInstance Job definition
-The StartInstance Operation can be used to start a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be started by using either defining instance IDs or a TAG value.
+If the virtual machine is to be created within a VPC environment, use the **Subnet ID** field. Otherwise, use the **Security Group** field.
 
-Field | Description
---------- | -----------
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be started. The TAG value overrides the defined instance values in the list.  
-**Wait for Instance(s) Startup** | Optional field. When selected will wait for the started instances to be in a ***Running ok*** condition.
-**Insert**, **Update** or **Remove** Instances | Used to Insert, Update or Remove Instances from the Defined Instances list. To insert an instance, enter the name and select the Add button. To Update an instance value, select the Instance in the Defined Instances list, then update it and select the Update button. To remove an instance from the Defined Instances list, select the instance in the Defined Instances list and then select the Remove button.
-**Defined Instances**            | Contains a list of instance ID’s that will be started. 
+| Field | Description |
+|---|---|
+| **Number** | Required. The number of instances to create. Default: `1`. |
+| **Image ID** | Required. The Amazon Machine Image (AMI) to use. Select from the list. Values are retrieved from the **AWS_IMAGES** global property. |
+| **Image Type** | Required. The instance type that defines the CPU, memory, and storage properties of the instance. Select from the list. Values are retrieved from the **AWS_SIZES** global property. |
+| **Tag** | Optional. A name assigned to the instance being created. The tag value is used as the instance name and can be referenced in subsequent GetInstanceStatusByTag, StartInstance, StopInstance, and TerminateInstance jobs. Using a tag lets a single downstream job act on multiple instances. |
+| **Security Group** | Mutually exclusive with the Subnet ID field. Either Security Group or Subnet ID must be present. If the security group does not exist, it is created during the CreateInstance job. |
+| **Subnet ID** | Defines the security environment for the instance within a VPC. If the security group does not exist, it is created during the CreateInstance job. |
+| **Key Name** | Required. The key used when accessing the created instance. If the key name does not exist, it is created during the CreateInstance job. |
+| **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all created instances reach a Running state before completing. |
 
-#### StopInstance Job definition
-The StopInstance Operation can be used to stop a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be stopped by either defining instance IDs or a TAG value.
+### GetInstanceStatusByTag job definition
 
-Field | Description
---------- | -----------
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be stopped. The TAG value overrides the defined instance values in the list.  
-**Insert**, **Update** or **Remove** Instances | Used to Insert, Update or Remove Instances from the Defined Instances list. To insert an instance, enter the name and select the Add button. To Update an instance value, select the Instance in the Defined Instances list, then update it and select the Update button. To remove an instance from the Defined Instances list, select the instance in the Defined Instances list and then select the Remove button.
-**Defined Instances**            | Contains a list of instance ID’s that will be stopped. 
+The GetInstanceStatusByTag operation retrieves the status of instances associated with the supplied user credentials in the selected region. You can retrieve all instances or filter by tag name.
 
-#### TerminateInstance Job definition
-The TerminateInstance Operation can be used to remove a defined instance or multiple defined instances or all instances that have a matching the Tag value.  The instances can be terminated by either defining instance IDs or a TAG value.
+| Field | Description |
+|---|---|
+| **Tag Name** | When present, retrieves the status of all instances with the specified tag name in the selected region. When left empty, retrieves the status of all instances in the selected region associated with the supplied user credentials. |
 
-Field | Description
---------- | -----------
-**Tag Name**                     | When present the status of all instances that have the defined tag name in the selected region that are associated with the supplied user credentials will be terminated. The TAG value overrides the defined instance values in the list.  
-**Insert**, **Update** or **Remove** Instances | Used to Insert, Update or Remove Instances from the Defined Instances list. To insert an instance, enter the name and select the Add button. To Update an instance value, select the Instance in the Defined Instances list, then update it and select the Update button. To remove an instance from the Defined Instances list, select the instance in the Defined Instances list and then select the Remove button.
-**Defined Instances**            | Contains a list of instance ID’s that will be terminated. 
+### StartInstance job definition
 
-#### Properties
-During CreateInstance and StartInstance operations, if the Wait for Instance(s) Startup has been selected, it is possible to insert the instance identifier, the instance public DNS address, the instance public IP Address and the instance private IP Address values into properties within the OpCon Environment. The connector uses the **[OPCON API INFORMATION]** definitions in the Connector.config to establish a connection to the OpCon-API of the OpCon system. 
+The StartInstance operation starts one or more stopped instances. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-Field | Description
---------- | -----------
-**Instance ID**                  | When present the instance ID will be saved in this property name with an appended counter value (i.e. ***name_counter value***).    
-**Instance Public DNS**          | When present the public DNS value will be saved in this property name with an appended counter value (i.e. ***name_counter value***).   
-**Instance Public IPADR**        | When present the public IP Address will be saved in this property name with an appended counter value (i.e. ***name_counter value***).    
-**Instance Private IPADR**       | When present the private IP Address will be saved in this property name with an appended counter value (i.e. ***name_counter value***).  
+| Field | Description |
+|---|---|
+| **Tag Name** | When present, starts all instances with the specified tag name in the selected region. The Tag value overrides the Defined Instances list. |
+| **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all started instances reach a Running state before completing. |
+| **Insert, Update, or Remove Instances** | Used to manage the Defined Instances list. To insert: enter the instance name and select **Add**. To update: select the instance from the list, update the value, and select **Update**. To remove: select the instance from the list and select **Remove**. |
+| **Defined Instances** | A list of instance IDs to start. |
 
-For a single instance, the values can be found in the property names.
+### StopInstance job definition
 
-For multiple instances, the values can be found in properties which have a counter value appended to them. In the above case, the instance ID will be saved in global property  MF_instanceId_1, the instance public DNS value in MF_DnsAdr_1, the instance public IP Address in MF_IpAdr_1 and the private IP Address in MF_PrIpAdr_1.
-If creating or starting more than 1 instance, additional properties are created for each instance (i.e. instance 2 instance ID will be saved in property MF_instanceId_2, instance 3 instance ID will be saved in property MF_instanceId_3.
+The StopInstance operation stops one or more running instances. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-## Job Finished processing 
+| Field | Description |
+|---|---|
+| **Tag Name** | When present, stops all instances with the specified tag name in the selected region. The Tag value overrides the Defined Instances list. |
+| **Insert, Update, or Remove Instances** | Used to manage the Defined Instances list. To insert: enter the instance name and select **Add**. To update: select the instance from the list, update the value, and select **Update**. To remove: select the instance from the list and select **Remove**. |
+| **Defined Instances** | A list of instance IDs to stop. |
 
-A AWSEC2 Scheduled JOB has the following possible return codes:
+### TerminateInstance job definition
 
-0	Success, the job completed processing.
-1	Failure, an exception occurred during job processing.
+The TerminateInstance operation removes one or more instances from the environment. Instances can be targeted by listing their IDs or by specifying a Tag value.
 
-This means that to check for a successful completion, the Failure Criteria should be set to NE (Not Equal) to 0.
+| Field | Description |
+|---|---|
+| **Tag Name** | When present, terminates all instances with the specified tag name in the selected region. The Tag value overrides the Defined Instances list. |
+| **Insert, Update, or Remove Instances** | Used to manage the Defined Instances list. To insert: enter the instance name and select **Add**. To update: select the instance from the list, update the value, and select **Update**. To remove: select the instance from the list and select **Remove**. |
+| **Defined Instances** | A list of instance IDs to terminate. |
+
+### Properties
+
+During CreateInstance and StartInstance operations, when **Wait for Instance(s) Startup** is selected, you can save instance values into OpCon properties. The connector uses the `[OPCON API INFORMATION]` settings in `Connector.config` to connect to the OpCon API.
+
+| Field | Description |
+|---|---|
+| **Instance ID** | When present, the instance ID is saved to this property name with an appended counter value (for example, `propertyName_1`). |
+| **Instance Public DNS** | When present, the public DNS value is saved to this property name with an appended counter value. |
+| **Instance Public IPADR** | When present, the public IP address is saved to this property name with an appended counter value. |
+| **Instance Private IPADR** | When present, the private IP address is saved to this property name with an appended counter value. |
+
+For a single instance, values are saved in the specified property names. For multiple instances, values are saved in properties with a counter appended (for example, instance 1 saves to `MF_instanceId_1`, instance 2 to `MF_instanceId_2`, and so on).
+
+## Job finished processing
+
+An AWSEC2 job has the following return codes:
+
+| Return code | Meaning |
+|---|---|
+| `0` | Success — the job completed processing |
+| `1` | Failure — an exception occurred during job processing |
+
+To detect failures, set the Failure Criteria to **NE** (Not Equal) to `0`.
 
 ## Logging
 
-The default logging implemented by the connector consists of a maximum cycle of five log files. The log files contain information about the AWSEC2 Connector and any jobs run by the AWSEC2 Connector. The log files (awsec2.log - awsec2.log.5) are located in the ***installation_dir***\log directory. Information is appended into the log files and any error messages, return codes can be viewed in these log files.
+The connector maintains a rotating set of five log files. Log files contain information about the AWSEC2 Connector and any jobs run by it. The log files (`awsec2.log` through `awsec2.log.5`) are located in the `log` subdirectory of the installation directory. All information produced by the OpCon job is also available through the OpCon JORS capability.
 
-All information produced by the OpCon job is available in the job output and can be retrieved using the OpCon JORS capability. 
+## FAQs
+
+**What do I need to configure before defining AWS EC2 jobs?**
+
+Complete the **AWS_REGIONS**, **AWS_IMAGES**, and **AWS_SIZES** global properties. These properties populate the region, image, and size lists in the job definition form.
+
+**What are the return codes for an AWSEC2 job?**
+
+Return code `0` indicates success. Return code `1` indicates failure. Set the Failure Criteria to **NE** (Not Equal) to `0` to detect failures correctly.
+
+**How do I start or stop multiple instances at once?**
+
+Add each instance ID to the Defined Instances list, or use a Tag value to target all instances with the same tag name. The Tag value takes precedence over the Defined Instances list when both are present.
+
+**Where are the AWSEC2 Connector log files located?**
+
+Log files are in the `log` subdirectory of the connector installation directory. The files are named `awsec2.log` through `awsec2.log.5` and rotate automatically.
+
+**Can I save instance properties to use in downstream jobs?**
+
+Yes. When **Wait for Instance(s) Startup** is selected on a CreateInstance or StartInstance job, you can specify property names in the Properties section. The connector saves the instance ID, public DNS, public IP address, and private IP address to those properties via the OpCon API.
+
+## Glossary
+
+**AMI (Amazon Machine Image)** — A preconfigured template used to create EC2 instances, containing the operating system and additional software.
+
+**Instance type** — A configuration that defines the CPU, memory, storage, and networking capacity of an EC2 instance (for example, `t2.micro`, `m5.large`).
+
+**Tag** — A name assigned to an EC2 instance, used to identify and group instances for subsequent operations.
+
+**Security group** — A virtual firewall controlling the protocols, ports, and IP ranges permitted to communicate with EC2 instances.
+
+**Subnet ID** — The identifier of a subnet within a VPC, used to place an EC2 instance within a specific network segment.
+
+**JORS (Job Output Retrieval System)** — The OpCon capability for retrieving job output produced on agent machines.
+
+**AWS_IMAGES** — An OpCon global property containing a comma-separated list of AMI image entries used to populate the Image ID list in the job definition.
+
+**AWS_SIZES** — An OpCon global property containing a comma-separated list of instance type entries used to populate the Image Type list in the job definition.
+
+**AWS_REGIONS** — An OpCon global property containing a comma-separated list of AWS region identifiers used to populate the Region list in the job definition.
+
+**Related topics:**
+
+- [AWSEC2 Connector Overview](./overview.md)
+- [Installation](./installation.md)
+- [Solution Manager Sub-type Operation](./SM Subtype operation.md)
