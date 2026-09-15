@@ -96,16 +96,22 @@ Encoding obscures a credential; it does not protect it. A value produced by `Enc
 | Property | Description |
 |---|---|
 | **[CONNECTOR]** | Section header |
-| **CONNECTOR_NAME** | The name of the connector. Do not change this value. |
-| **MAX_WAIT_TIME_FOR_STARTUP** | The maximum time in minutes to wait for startup completion before terminating the requested action and returning an error. Default value is 10. |
-| **DEBUG** | Enables debug mode. Value: `ON` or `OFF` (default: `OFF`). |
-| **[USER]** | Section header. Identifies which security credentials to use for a request. The User ID value in the job definition is matched to this header to load the required credentials. |
+| **CONNECTOR_NAME** | Optional. A label for the connector. |
+| **MAX_WAIT_TIME_FOR_STARTUP** | Required. The maximum time in minutes to wait for startup completion before terminating the requested action and returning an error. There is no default. |
+| **DEBUG** | Required. Enables debug mode. Value: `ON` or `OFF`. There is no default. |
+| **[USER1]** | Section header. Identifies which security credentials to use for a request. You choose the header name, and the **User ID** value in the job definition must match it exactly. Add one section per set of credentials — for example `[USER1]` and `[USER2]`. |
 | **CONNECTOR_USER_ACCESS_KEY** | The user access key for the AWS EC2 environment. Must be encoded using EncryptValue. |
 | **CONNECTOR_USER_SECRET_KEY** | The matching user secret key. Must be encoded using EncryptValue. |
 | **[OPCON API INFORMATION]** | Section header |
 | **ADDRESS** | The address of the OpCon REST API server, including the port number. Use port 9000 for non-TLS or port 9010 for TLS. Format: `address:port`. |
 | **USING_TLS** | Indicates whether the server uses TLS. Value: `True` or `False` (default: `True`). |
 | **TOKEN** | An application token that authenticates requests to the OpCon API. |
+
+:::info Note
+
+`MAX_WAIT_TIME_FOR_STARTUP` and `DEBUG` are required and have no default value — set both. `USING_TLS` does default to `True` if you omit it. Use the example below as the reference for a complete file.
+
+:::
 
 The following is an example `Connector.config` file. Every value in angle brackets is a placeholder — replace each one with a value from your own environment. Do not copy credential values from any other environment into this file.
 
@@ -164,7 +170,11 @@ List of Regions
 
 ## Solution Manager sub-type installation
 
-**NOTE:** All interactions with the Solution Manager sub-type must be completed using Solution Manager.
+:::info Note
+
+All interactions with the Solution Manager sub-type must be completed using Solution Manager.
+
+:::
 
 To install the Solution Manager sub-type, complete the following steps:
 

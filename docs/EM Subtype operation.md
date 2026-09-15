@@ -54,7 +54,7 @@ If the virtual machine is to be created within a VPC environment, use the **Subn
 | **Image Type** | Required. The instance type that defines the CPU, memory, and storage properties of the instance. Select from the list. Values are retrieved from the **AWS_SIZES** global property. |
 | **Tag** | Optional. A name assigned to the instance being created. The tag value is used as the instance name and can be referenced in subsequent GetInstanceStatusByTag, StartInstance, StopInstance, and TerminateInstance jobs. Using a tag lets a single downstream job act on multiple instances. |
 | **Security Group** | Mutually exclusive with the Subnet ID field. Either Security Group or Subnet ID must be present. If the security group does not exist, it is created during the CreateInstance job. |
-| **Subnet ID** | Defines the security environment for the instance within a VPC. If the security group does not exist, it is created during the CreateInstance job. |
+| **Subnet ID** | Mutually exclusive with the Security Group field. Places the instance in an existing subnet within a VPC. The subnet must already exist — the connector does not create it. |
 | **Key Name** | Required. The key used when accessing the created instance. If the key name does not exist, it is created during the CreateInstance job. |
 | **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all created instances reach a Running state before completing. |
 
@@ -123,7 +123,11 @@ To detect failures, set the Failure Criteria to **NE** (Not Equal) to `0`.
 
 ## Logging
 
-The connector maintains a rotating set of five log files. Log files contain information about the AWSEC2 Connector and any jobs run by it. The log files (`awsec2.log` through `awsec2.log.5`) are located in the `log` subdirectory of the installation directory. All information produced by the OpCon job is also available through the OpCon JORS capability.
+The connector writes to `awsec2.log` in the `log` subdirectory of the installation directory. Log files contain information about the AWSEC2 Connector and any jobs run by it. When a log file reaches 100 MB it rolls, and the rolled file is written to a month-named subdirectory with a date-stamped name — for example `log\2026-09\awsec2_2026-09-15.0.log`.
+
+Rolled log files are retained indefinitely unless you configure pruning, so include the `log` directory in whatever disk monitoring you apply to the connector host.
+
+All information produced by the OpCon job is also available through the OpCon JORS capability.
 
 ## FAQs
 
@@ -141,7 +145,7 @@ Add each instance ID to the Defined Instances list, or use a Tag value to target
 
 **Where are the AWSEC2 Connector log files located?**
 
-Log files are in the `log` subdirectory of the connector installation directory. The files are named `awsec2.log` through `awsec2.log.5` and rotate automatically.
+The active log is `awsec2.log` in the `log` subdirectory of the connector installation directory. Rolled files are written to a month-named subdirectory with a date-stamped name, and are retained indefinitely unless you configure pruning. See [Logging](#logging).
 
 **Can I save instance properties to use in downstream jobs?**
 
