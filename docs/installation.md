@@ -55,7 +55,7 @@ To install the connector, complete the following steps:
 After extraction, the root installation directory contains the following items:
 
 - `awsec2.exe` — the connector executable
-- `EncryptValue.exe` — the encryption utility
+- `EncryptValue.exe` — the credential encoding utility
 - `Connector.config` — the connector configuration file
 - `java/` — directory containing OpenJDK 11
 - `emplugins/` — directory containing the Enterprise Manager job sub-type plugin
@@ -68,17 +68,28 @@ To configure the connector, complete the following steps:
 2. Set the required values as described in the table below.
 3. Save the file.
 
-All user and password values placed in the configuration file must be encrypted using the `EncryptValue.exe` utility.
+All user and password values placed in the configuration file must be encoded using the `EncryptValue.exe` utility.
 
 ### EncryptValue utility
 
-The EncryptValue utility uses standard 64-bit encryption. It accepts a `-v` argument and displays the encrypted result.
+The EncryptValue utility encodes a credential value so that it is not stored in plain text. It accepts a `-v` argument and displays the encoded result.
 
-To encrypt a value on Windows, run the following command:
+To encode a value on Windows, run the following command:
 
 ```
 EncryptValue.exe -v "abcdefg"
 ```
+
+:::caution
+
+Encoding obscures a credential; it does not protect it. A value produced by `EncryptValue.exe` can be reversed by anyone who can read it, so treat `Connector.config` as a file that contains live credentials:
+
+- Restrict access to the file using file system permissions, so that only the account running the connector and the administrators who maintain it can read it.
+- Never paste a value from a working `Connector.config` into a support ticket, a screenshot, a repository, or documentation. Replace credential values with placeholders before sharing the file.
+- Give the AWS user only the EC2 permissions the connector needs, so that an exposed key has limited reach.
+- Rotate the AWS access key and the OpCon API token on the schedule your organization uses for service credentials.
+
+:::
 
 ### Connector.config settings
 
@@ -89,29 +100,29 @@ EncryptValue.exe -v "abcdefg"
 | **MAX_WAIT_TIME_FOR_STARTUP** | The maximum time in minutes to wait for startup completion before terminating the requested action and returning an error. Default value is 10. |
 | **DEBUG** | Enables debug mode. Value: `ON` or `OFF` (default: `OFF`). |
 | **[USER]** | Section header. Identifies which security credentials to use for a request. The User ID value in the job definition is matched to this header to load the required credentials. |
-| **CONNECTOR_USER_ACCESS_KEY** | The user access key for the AWS EC2 environment. Must be encrypted using EncryptValue. |
-| **CONNECTOR_USER_SECRET_KEY** | The matching user secret key. Must be encrypted using EncryptValue. |
+| **CONNECTOR_USER_ACCESS_KEY** | The user access key for the AWS EC2 environment. Must be encoded using EncryptValue. |
+| **CONNECTOR_USER_SECRET_KEY** | The matching user secret key. Must be encoded using EncryptValue. |
 | **[OPCON API INFORMATION]** | Section header |
 | **ADDRESS** | The address of the OpCon REST API server, including the port number. Use port 9000 for non-TLS or port 9010 for TLS. Format: `address:port`. |
 | **USING_TLS** | Indicates whether the server uses TLS. Value: `True` or `False` (default: `True`). |
 | **TOKEN** | An application token that authenticates requests to the OpCon API. |
 
-The following is an example `Connector.config` file:
+The following is an example `Connector.config` file. Every value in angle brackets is a placeholder — replace each one with a value from your own environment. Do not copy credential values from any other environment into this file.
 
 ```
 [CONNECTOR]
 CONNECTOR_NAME=AWS EC2 Connector
 MAX_WAIT_TIME_FOR_STARTUP=10
-DEBUG=ON
+DEBUG=OFF
 
 [USER1]
-CONNECTOR_USER_ACCESS_KEY=5155744a5156524d4e6c525a54556c55574646545355314a5431493d
-CONNECTOR_USER_SECRET_KEY=5433553353325a314b79396c526d4572576d39595a584a77576e5273595852764b
+CONNECTOR_USER_ACCESS_KEY=<encoded AWS access key ID>
+CONNECTOR_USER_SECRET_KEY=<encoded AWS secret access key>
 
 [OPCON API INFORMATION]
-ADDRESS=BVHTEST02:9010
+ADDRESS=<OpCon API host>:9010
 USING_TLS=True
-TOKEN=ec0fe84e-cabe-4b26-841e-2d958d3af253
+TOKEN=<OpCon API token>
 ```
 
 ## Enterprise Manager sub-type installation
@@ -311,9 +322,9 @@ Restart Enterprise Manager using **Run as Administrator**. After this restart, E
 
 ## Glossary
 
-**EncryptValue** — A utility included with the AWSEC2 Connector that encrypts credential values for storage in the `Connector.config` file using standard 64-bit encryption.
+**EncryptValue** — A utility included with the AWSEC2 Connector that encodes credential values for storage in the `Connector.config` file so that they are not held in plain text. Encoding obscures a credential; it does not protect it.
 
-**Connector.config** — The configuration file for the AWSEC2 Connector, containing the connector name, debug setting, encrypted AWS credentials, and OpCon API connection information.
+**Connector.config** — The configuration file for the AWSEC2 Connector, containing the connector name, debug setting, encoded AWS credentials, and OpCon API connection information.
 
 **OpenJDK** — An open-source implementation of the Java Development Kit. The AWSEC2 Connector includes an embedded OpenJDK Version 11 and does not require a separate Java installation.
 

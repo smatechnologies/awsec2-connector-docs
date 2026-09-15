@@ -98,7 +98,7 @@ Two sub-types are supported: the Enterprise Manager Windows job sub-type (**AWS 
 
 **How does the connector authenticate with AWS?**
 
-The connector uses a user access key and secret key defined in the Connector.config file. Both values must be encrypted using the EncryptValue utility included with the connector.
+The connector uses a user access key and secret key defined in the Connector.config file. Both values must be encoded using the EncryptValue utility included with the connector. Encoding keeps the credentials out of plain text but does not protect them, so restrict access to `Connector.config` using file system permissions and grant the AWS user only the EC2 permissions the connector needs.
 
 **Can the connector manage multiple instances at once?**
 
@@ -128,7 +128,7 @@ The connector communicates with the AWS environment through the AWS Java SDK. Th
 
 **Key pair** — An AWS credential pair used for secure access to EC2 instances. If the key name does not exist at creation time, it is created during the CreateInstance operation.
 
-**Connector.config** — The configuration file for the AWSEC2 Connector, containing encrypted AWS credentials and OpCon API connection information.
+**Connector.config** — The configuration file for the AWSEC2 Connector, containing encoded AWS credentials and OpCon API connection information.
 
 **Related topics:**
 
