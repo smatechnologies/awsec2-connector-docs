@@ -39,7 +39,7 @@ Amazon EC2 provides the following:
 
 ## How the connector works
 
-The connector is a Java program that uses the AWS Java SDK to communicate with the AWS environment. OpCon executes it as a Windows job through the Windows Agent.
+The connector is a Java program that uses the AWS Java SDK to communicate with the AWS environment. OpCon runs it as a Windows job through the Windows Agent.
 
 When an OpCon job is scheduled, the job definitions are passed as arguments to the AWS EC2 Connector. The connector uses the user access key and secret key defined in the Connector.config file to authenticate with AWS and perform the requested operation.
 

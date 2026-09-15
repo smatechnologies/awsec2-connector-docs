@@ -19,9 +19,13 @@ The Solution Manager AWSEC2 sub-type provides a job definition interface for man
 - Use this sub-type when your OpCon environment uses the Solution Manager interface and OpCon Release 25.0.3 or higher
 - Use this sub-type to create, start, stop, terminate, or retrieve the status of EC2 instances as part of an automated schedule
 
-**NOTE:** All interactions with the Solution Manager sub-type must be completed using Solution Manager.
+:::info Note
 
-Before defining jobs, complete the drop-down and config scripts and create the ACSAWSEC2 agent. See the [Installation](./installation.md) page for instructions.
+All interactions with the Solution Manager sub-type must be completed using Solution Manager.
+
+:::
+
+Before defining jobs, complete the **Drop-down Script** and **Config Script** and create the ACSAWSEC2 agent. See the [Installation](./installation.md) page for instructions.
 
 ## AWS EC2 job definition
 
@@ -48,7 +52,7 @@ If the virtual machine is to be created within a VPC environment, use the **Subn
 | **Image Type** | Required. The instance type that defines the CPU, memory, and storage properties of the instance. Select from the list. |
 | **Tag** | Optional. A name assigned to the instance being created. The tag value is used as the instance name and can be referenced in subsequent GetInstanceStatusByTag, StartInstance, StopInstance, and TerminateInstance jobs. |
 | **Security Group** | Mutually exclusive with the Subnet ID field. Either Security Group or Subnet ID must be present. If the security group does not exist, it is created during the Create Instance job. |
-| **Subnet ID** | Defines the security environment for the instance within a VPC. If the security group does not exist, it is created during the Create Instance job. |
+| **Subnet ID** | Mutually exclusive with the Security Group field. Places the instance in an existing subnet within a VPC. The subnet must already exist — the connector does not create it. |
 | **Key Name** | Required. The key used when accessing the created instance. If the key name does not exist, it is created during the Create Instance job. |
 | **Wait for Instance(s) Startup** | Optional. When selected, the job waits until all created instances reach a Running state before completing. |
 
@@ -141,7 +145,7 @@ Job output is available through the OpCon JORS capability and can be retrieved u
 
 **What must be set up before defining AWSEC2 jobs in Solution Manager?**
 
-The drop-down script, config script, and ACSAWSEC2 agent must be created before defining jobs. See the [Installation](./installation.md) page for instructions.
+The **Drop-down Script**, **Config Script**, and ACSAWSEC2 agent must be created before defining jobs. See the [Installation](./installation.md) page for instructions.
 
 ## Glossary
 
